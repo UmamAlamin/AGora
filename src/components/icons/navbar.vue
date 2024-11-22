@@ -7,6 +7,7 @@
       </div>
       <h1 class="text-lg font-semibold tracking-wider text-gray-800">AGORA</h1>
     </div>
+
     <!-- Menu toggle for mobile -->
     <button 
       class="md:hidden flex items-center text-gray-800 focus:outline-none"
@@ -16,57 +17,95 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7" />
       </svg>
     </button>
-    <!-- Main Navigation -->
-    <nav 
-      :class="[
-        'md:flex items-center md:gap-8',
-        isMenuOpen ? 'flex flex-col' : 'hidden',
-        'absolute md:static top-16 left-0 w-full md:w-auto bg-gray-100',
-        'shadow-lg md:shadow-none',
-        'p-4 md:p-0',
-        'space-y-4 md:space-y-0'
-      ]"
-      @click.away="isMenuOpen = false"
-    >
+
+    <!-- Desktop Navigation -->
+    <div class="hidden md:flex md:flex-1 md:items-center md:justify-between md:ml-8">
       <!-- Search Bar -->
-      <div class="w-full md:flex-grow md:mx-8 max-w-md">
+      <div class="flex-1 flex justify-center max-w-3xl mx-4">
+        <input
+          type="text"
+          placeholder="Search events..."
+          class="w-full max-w-xl p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring focus:ring-gray-400"
+        />
+      </div>
+
+      <!-- Desktop Auth Buttons -->
+      <div class="flex items-center gap-4">
+        <template v-if="isAuthenticated">
+          <span class="text-gray-800">{{ user.username }}</span>
+          <button
+            @click="logout"
+            class="px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500 whitespace-nowrap"
+          >
+            Logout
+          </button>
+        </template>
+        <template v-else>
+          <button
+            @click="$emit('showLoginModal')"
+            class="px-4 py-2 border border-gray-800 text-gray-800 font-medium rounded-md hover:bg-gray-200 whitespace-nowrap"
+          >
+            Log In
+          </button>
+          <button
+            @click="$emit('showSignupModal')"
+            class="px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500 whitespace-nowrap"
+          >
+            Sign Up
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div 
+      :class="[
+        isMenuOpen ? 'flex flex-col' : 'hidden',
+        'md:hidden',
+        'absolute top-full left-0',
+        'w-full bg-gray-100',
+        'shadow-lg',
+        'transition-all duration-300 ease-in-out'
+      ]"
+    >
+      <!-- Mobile Search -->
+      <div class="p-4">
         <input
           type="text"
           placeholder="Search events..."
           class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring focus:ring-gray-400"
         />
       </div>
-      <!-- Auth Buttons / User Info -->
-      <div class="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-        <!-- If logged in, show profile and logout -->
+
+      <!-- Mobile Auth Buttons -->
+      <div class="flex flex-col gap-2 p-4 border-t border-gray-200">
         <template v-if="isAuthenticated">
-          <div class="flex items-center gap-2 w-full md:w-auto justify-center">
-            <span>{{ user.username }}</span>
+          <div class="flex items-center justify-between">
+            <span class="text-gray-800">{{ user.username }}</span>
             <button
               @click="logout"
-              class="px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500 w-full md:w-auto"
+              class="px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500"
             >
               Logout
             </button>
           </div>
         </template>
-        <!-- If not logged in, show Login and Signup buttons -->
         <template v-else>
           <button
             @click="$emit('showLoginModal')"
-            class="px-4 py-2 border border-gray-800 text-gray-800 font-medium rounded-md hover:bg-gray-200 w-full md:w-auto"
+            class="w-full px-4 py-2 border border-gray-800 text-gray-800 font-medium rounded-md hover:bg-gray-200"
           >
             Log In
           </button>
           <button
             @click="$emit('showSignupModal')"
-            class="px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500 w-full md:w-auto"
+            class="w-full px-4 py-2 bg-gray-400 text-white font-medium rounded-md hover:bg-gray-500"
           >
             Sign Up
           </button>
         </template>
       </div>
-    </nav>
+    </div>
   </header>
 </template>
 
@@ -97,21 +136,30 @@ export default {
 </script>
 
 <style scoped>
-nav {
-  transition: all 0.3s ease-in-out;
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: all 0.3s ease;
 }
 
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* Custom scrollbar for better mobile experience */
 @media (max-width: 768px) {
-  nav {
-    transform: translateY(-10px);
-    opacity: 0;
-    pointer-events: none;
+  ::-webkit-scrollbar {
+    width: 4px;
   }
   
-  nav.flex {
-    transform: translateY(0);
-    opacity: 1;
-    pointer-events: auto;
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 2px;
   }
 }
 </style>
